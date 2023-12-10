@@ -56,7 +56,6 @@
                     echo "<option value='' disabled>No hay lotes disponibles</option>";
                 }
 
-                // Cerrar la conexión
                 $conn->close();
                 ?>
             </select>
