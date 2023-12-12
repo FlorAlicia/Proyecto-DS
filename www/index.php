@@ -21,7 +21,6 @@
                 <div class="col-md-9 col-lg-8 mx-auto">
                 <h3 class="login-heading mb-4">Iniciar sesion</h3>
 
-                <!-- Sign In Form -->
                 <form action="srv/logear.php" method="post">
                     <div class="form-floating mb-3">
                         <input type="email" class="form-control" name="email" id="email" placeholder="name@example.com" required>

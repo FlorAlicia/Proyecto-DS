@@ -17,16 +17,13 @@
                     <a class="nav-link" href="#">Registro</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Almacen
-                    </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="medicamento.php">Medicamento</a></li>
-                        <li><a class="dropdown-item" href="#">Granos</a></li>
-                        <li><a class="dropdown-item" href="#">Ventas</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Forrajes</a></li>
-                        <li><a class="dropdown-item" href="#">Nomina</a></li>
+                        <li><a class="dropdown-item" href="menuganado.php">Ganado</a></li>
+                        <li><a class="dropdown-item" href="alimentar.php">Alimentar</a></li>
+                        <li><a class="dropdown-item" href="alimentos.php">Almacen</a></li>
+                        <li><a class="dropdown-item" href="empleados.php">Empleados</a></li>
+                        <li><a class="dropdown-item" href="caja.php">Caja</a></li>
+                        <li><a class="dropdown-item" href="ganaderos.php">Ganaderos</a></li>
                     </ul>
                 </li>            
             </ul>

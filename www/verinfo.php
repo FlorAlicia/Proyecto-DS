@@ -25,7 +25,7 @@ if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
 
-$sql = "SELECT *, PrecioKilo * CantidadAnimales AS PrecioTotal FROM Lotes WHERE id_lote = $id_lote";
+$sql = "SELECT *, PrecioKilo * PesoLote AS PrecioTotal FROM Lotes WHERE id_lote = $id_lote";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
@@ -43,12 +43,12 @@ if ($result->num_rows > 0) {
                 <td><?php echo $row["CantidadAnimales"]; ?></td>
             </tr>
             <tr>
-                <th>Fecha de Entrada</th>
-                <td><?php echo $row["FechaEntrada"]; ?></td>
+                <th>Peso por Lote</th>
+                <td><?php echo $row["PesoLote"]; ?></td>
             </tr>
             <tr>
-                <th>Etapa</th>
-                <td><?php echo $row["Id_etapa"]; ?></td>
+                <th>Fecha de Entrada</th>
+                <td><?php echo $row["FechaEntrada"]; ?></td>
             </tr>
             <tr>
                 <th>Precio por Kilo</th>

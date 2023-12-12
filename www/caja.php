@@ -12,19 +12,16 @@ if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
 
-// Consulta para obtener las ventas realizadas
 $sqlVentas = "SELECT SUM(Monto) AS TotalVentas FROM Caja WHERE TipoOperacion = 'Venta'";
 $resultVentas = $conn->query($sqlVentas);
 $rowVentas = $resultVentas->fetch_assoc();
 $totalVentas = $rowVentas["TotalVentas"];
 
-// Consulta para obtener los gastos por dieta
 $sqlGastosDieta = "SELECT SUM(Monto) AS TotalGastos FROM Caja WHERE TipoOperacion = 'Gasto'";
 $resultGastosDieta = $conn->query($sqlGastosDieta);
 $rowGastosDieta = $resultGastosDieta->fetch_assoc();
 $totalGastos = $rowGastosDieta["TotalGastos"];
 
-// Calcular el saldo
 $saldo = $totalVentas - $totalGastos;
 ?>
 

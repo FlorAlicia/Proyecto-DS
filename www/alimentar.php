@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <title>Alimentar Lotes</title>
+    <title>Alimentar y Vacunar Lotes</title>
 </head>
 <body>
 
@@ -16,7 +16,6 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <!-- Puedes agregar aquí más elementos del menú si es necesario -->
             </ul>
         </div>
     </div>
@@ -25,7 +24,43 @@
 <div class="container mt-4">
     <h2>Alimentar Lotes</h2>
 
-    <form action="procesar_alimentacion.php" method="post">
+    <?php
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["alimentarLotes"])) {
+        $loteId = $_POST["lote"];
+        $dieta = $_POST["dieta"];
+
+        $servername = "db";
+        $username = "root";
+        $password = "clave";
+        $dbname = "Ganaderia";
+
+        $conn = new mysqli($servername, $username, $password, $dbname);
+
+        if ($conn->connect_error) {
+            die("Conexión fallida: " . $conn->connect_error);
+        }
+
+        $procedureName = ($dieta == "Crecimiento") ? "GastoDieta1" : (($dieta == "Engorda") ? "GastoDieta2" : "");
+
+        if (!empty($procedureName)) {
+            $sql = "CALL $procedureName()";
+
+            $result = $conn->query($sql);
+
+            if ($result) {
+                echo "<div class='alert alert-success' role='alert'>Procedimiento almacenado ejecutado con éxito.</div>";
+            } else {
+                echo "<div class='alert alert-danger' role='alert'>Error al ejecutar el procedimiento almacenado: " . $conn->error . "</div>";
+            }
+        } else {
+            echo "<div class='alert alert-danger' role='alert'>Dieta no válida.</div>";
+        }
+
+        $conn->close();
+    }
+    ?>
+
+    <form action="alimentar.php" method="post">
         <div class="form-group">
             <label for="lote">Seleccione el Lote:</label>
             <select class="form-control" id="lote" name="lote">
@@ -37,19 +72,17 @@
 
                 $conn = new mysqli($servername, $username, $password, $dbname);
 
-                // Verificar la conexión
                 if ($conn->connect_error) {
                     die("Conexión fallida: " . $conn->connect_error);
                 }
 
-                // Consulta para obtener todos los datos de la tabla Lotes
-                $sql = "SELECT Id_lote, Razonsocial, CantidadAnimales, PesoLote, PrecioKilo, FechaEntrada, PrecioTotal, Id_etapa FROM Lotes";
+                $sql = "SELECT Id_lote, Razonsocial, CantidadAnimales, PesoLote, PrecioKilo, FechaEntrada, PrecioTotal FROM Lotes";
                 $result = $conn->query($sql);
 
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<option value='{$row['Id_lote']}'>
-                                {$row['Razonsocial']} - Cantidad: {$row['CantidadAnimales']}, Peso: {$row['PesoLote']} kg, Precio Total: {$row['PrecioTotal']}
+                                {$row['Razonsocial']} - Cantidad: {$row['CantidadAnimales']}
                               </option>";
                     }
                 } else {
@@ -70,6 +103,118 @@
         </div>
 
         <button type="submit" class="btn btn-primary" name="alimentarLotes">Alimentar Lotes</button>
+    </form>
+</div>
+
+<div class="container mt-4">
+    <h2>Vacunar Lotes</h2>
+
+    <?php
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["vacunarLote"])) {
+        $loteIdVacuna = $_POST["lote"];
+        $vacunaId = $_POST["vacuna"];
+
+        $servername = "db";
+        $username = "root";
+        $password = "clave";
+        $dbname = "Ganaderia";
+
+        $conn = new mysqli($servername, $username, $password, $dbname);
+
+        if ($conn->connect_error) {
+            die("Conexión fallida: " . $conn->connect_error);
+        }
+
+        $getCantidadSql = "SELECT CantidadAnimales FROM Lotes WHERE Id_lote = $loteIdVacuna";
+        $resultCantidad = $conn->query($getCantidadSql);
+
+        if ($resultCantidad->num_rows > 0) {
+            $rowCantidad = $resultCantidad->fetch_assoc();
+            $cantidadAnimales = $rowCantidad['CantidadAnimales'];
+
+            $updateSql = "UPDATE Vacunas SET cantidad = cantidad - $cantidadAnimales WHERE id_vacuna = $vacunaId";
+
+            if ($conn->query($updateSql) === TRUE) {
+                echo "<div class='alert alert-success' role='alert'>Vacunación realizada con éxito.</div>";
+            } else {
+                echo "<div class='alert alert-danger' role='alert'>Error al vacunar el lote: " . $conn->error . "</div>";
+            }
+        } else {
+            echo "<div class='alert alert-danger' role='alert'>Error al obtener la cantidad de animales del lote.</div>";
+        }
+
+        $conn->close();
+    }
+    ?>
+
+    <form action="alimentar.php" method="post">
+        <div class="form-group">
+            <label for="lote">Seleccione el Lote:</label>
+            <select class="form-control" id="lote" name="lote">
+                <?php
+                $servername = "db";
+                $username = "root";
+                $password = "clave";
+                $dbname = "Ganaderia";
+
+                $conn = new mysqli($servername, $username, $password, $dbname);
+
+                if ($conn->connect_error) {
+                    die("Conexión fallida: " . $conn->connect_error);
+                }
+
+                $sql = "SELECT Id_lote, Razonsocial, CantidadAnimales, PesoLote, PrecioKilo, FechaEntrada, PrecioTotal FROM Lotes";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo "<option value='{$row['Id_lote']}'>
+                                {$row['Razonsocial']} - Cantidad: {$row['CantidadAnimales']}
+                              </option>";
+                    }
+                } else {
+                    echo "<option value='' disabled>No hay lotes disponibles</option>";
+                }
+
+                $conn->close();
+                ?>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="vacuna">Seleccione la Vacuna:</label>
+            <select class="form-control" id="vacuna" name="vacuna">
+                <?php
+                $servername = "db";
+                $username = "root";
+                $password = "clave";
+                $dbname = "Ganaderia";
+
+                $conn = new mysqli($servername, $username, $password, $dbname);
+
+                if ($conn->connect_error) {
+                    die("Conexión fallida: " . $conn->connect_error);
+                }
+
+                $sql = "SELECT id_vacuna, nombre, cantidad, PrecioUni FROM Vacunas";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo "<option value='{$row['id_vacuna']}'>
+                                {$row['nombre']} - Cantidad: {$row['cantidad']}
+                              </option>";
+                    }
+                } else {
+                    echo "<option value='' disabled>No hay vacunas disponibles</option>";
+                }
+
+                $conn->close();
+                ?>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" name="vacunarLote">Vacunar Lote</button>
     </form>
 </div>
 

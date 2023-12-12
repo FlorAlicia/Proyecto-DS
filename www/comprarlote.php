@@ -2,22 +2,10 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compra de Lote</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" integrity="sha384-rbs5Fb0LfoBxKOzqPk7rOEHRz6HfaNz5oBX6Z3Nry5XfHjGz8r+JGIRGzKbck5V9" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <title>Comprar Lote</title>
 </head>
-<body><!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compra de Lote</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" integrity="sha384-rbs5Fb0LfoBxKOzqPk7rOEHRz6HfaNz5oBX6Z3Nry5XfHjGz8r+JGIRGzKbck5V9" crossorigin="anonymous">
-</head>
-
 <body>
 <?php
 include("includes/header.php");
@@ -37,25 +25,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recoger los datos del formulario
     $razonSocial = $_POST["razonSocial"];
     $fechaEntrada = $_POST["fechaEntrada"];
-    $idEtapa = $_POST["idEtapa"];
     $pesoLote = $_POST["pesoLote"];
     $precioKilo = $_POST["precioKilo"];
     $cantidadAnimales = $_POST["cantidadAnimales"];
 
-    // Calcular el PrecioTotal en base a PesoLote y PrecioKilo
-    $precioTotal = $pesoLote * $precioKilo;
-
     // Insertar los datos en la tabla Lotes sin incluir PrecioTotal
-    $sql = "INSERT INTO Lotes (Razonsocial, CantidadAnimales, PesoLote, PrecioKilo, FechaEntrada, Id_etapa) VALUES ('$razonSocial', $cantidadAnimales, '$pesoLote', '$precioKilo', '$fechaEntrada', $idEtapa)";
+    $sql = "INSERT INTO Lotes (Razonsocial, CantidadAnimales, PesoLote, PrecioKilo, FechaEntrada) 
+            VALUES ('$razonSocial', $cantidadAnimales, '$pesoLote', '$precioKilo', '$fechaEntrada')";
 
     if ($conn->query($sql) === TRUE) {
-        echo "<div class='container mt-5'><p>Lote comprado con éxito.</p></div>";
+        // No need to manually update 'PrecioTotal' when it's a generated column
+
+        // Insertar datos en la tabla Caja
+        $fechaOperacion = $fechaEntrada;
+        $tipoOperacion = 'Gasto';
+        $monto = $pesoLote * $precioKilo; // Assuming 'Monto' is based on 'PesoLote' and 'PrecioKilo'
+
+        $sqlCaja = "INSERT INTO Caja (FechaOperacion, TipoOperacion, Monto) 
+                    VALUES ('$fechaOperacion', '$tipoOperacion', '$monto')";
+
+        if ($conn->query($sqlCaja) !== TRUE) {
+            echo "<div class='container mt-5'><p>Error al registrar el gasto en la caja: " . $conn->error . "</p></div>";
+        }
+
+        echo "<div class='container mt-5'><p>Lote comprado con éxito y gasto registrado en la caja.</p></div>";
     } else {
         echo "<div class='container mt-5'><p>Error al comprar el lote: " . $conn->error . "</p></div>";
     }
 
     $conn->close();
 }
+
 // Volver a abrir la conexión para obtener opciones de RazonSocial y ID Lote
 $conexion = new Conexion();
 $conn = $conexion->conectar();
@@ -67,10 +67,6 @@ if (!$conn) {
 // Obtener opciones de RazonSocial desde la base de datos (tabla Ganaderos)
 $sqlRazonSocial = "SELECT Razonsocial FROM Ganaderos";
 $resultRazonSocial = $conn->query($sqlRazonSocial);
-
-// Obtener opciones de Etapa desde la base de datos (tabla Etapas)
-$sqlEtapa = "SELECT Id_etapa FROM Etapas";
-$resultEtapa = $conn->query($sqlEtapa);
 
 // Obtener opciones de ID Lote basadas en la Razón Social seleccionada
 $idLoteOptions = array();
@@ -125,26 +121,12 @@ if (isset($_POST["razonSocial"])) {
             <label for="cantidadAnimales" class="form-label">Cantidad de Animales</label>
             <input type="number" class="form-control" id="cantidadAnimales" name="cantidadAnimales" required>
         </div>
-        <div class="mb-3">
-            <label for="idEtapa" class="form-label">ID Etapa</label>
-            <select class="form-select" id="idEtapa" name="idEtapa" required>
-                <?php
-                if ($resultEtapa->num_rows > 0) {
-                    while ($rowEtapa = $resultEtapa->fetch_assoc()) {
-                        echo "<option value='" . $rowEtapa["Id_etapa"] . "'>" . $rowEtapa["Id_etapa"] . "</option>";
-                    }
-                } else {
-                    echo "<option value='' disabled>No hay etapas disponibles</option>";
-                }
-                ?>
-            </select>
-        </div>
 
         <button type="submit" class="btn btn-primary">Comprar Lote</button>
     </form>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<!-- Bootstrap Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-bz3htznfnCJUiN+ouzWEhA0J6i/DOTt8Y5FzhKG6z13MiWBKRl0pMb7OoBydSMIk" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -37,12 +37,12 @@
                 <a href="alimentar.php" class="btn btn-lg btn-secondary btn-white-border">
                     <img src="../images/alimentoic.png" alt="Alimentar" class="img-fluid rounded" style="width: 220px;">
                 </a>
-                <div class="btn-name">Alimentar Ganado</div>
+                <div class="btn-name">Alimentar Y Vacunar </Cap> Ganado</div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="btn-container">
-                <a href="alimentos.php" class="btn btn-lg btn-secondary btn-white-border">
+                <a href="almacen.php" class="btn btn-lg btn-secondary btn-white-border">
                     <img src="../images/almacenic.png" alt="Almacén" class="img-fluid rounded" style="width: 220px;">
                 </a>
                 <div class="btn-name">Almacén</div>
@@ -50,7 +50,6 @@
         </div>
     </div>
 
-    <!-- Segunda línea centrada -->
     <div class="row justify-content-center d-flex align-items-center">
         <div class="col-md-4">
             <div class="btn-container">

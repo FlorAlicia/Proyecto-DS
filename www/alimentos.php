@@ -45,12 +45,10 @@
 
         $conn = new mysqli($servername, $username, $password, $dbname);
 
-        // Verificar la conexión
         if ($conn->connect_error) {
           die("Conexión fallida: " . $conn->connect_error);
         }
 
-        // Consulta para obtener todos los datos de la tabla Alimentos
         $sql = "SELECT * FROM Alimentos";
         $result = $conn->query($sql);
 
@@ -64,11 +62,13 @@
           echo "</tr>";
         }
 
-        // Cerrar la conexión
         $conn->close();
       ?>
     </tbody>
   </table>
+  <form action="comprar_alimento.php" method="post">
+    <button type="submit" class="btn btn-primary">Comprar Alimento</button>
+  </form>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>

@@ -22,7 +22,6 @@ if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
 
-// Verifica si se ha enviado el formulario para eliminar o agregar un empleado
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["id_empleado"])) {
         $idEmpleado = $_POST["id_empleado"];
@@ -44,7 +43,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Obtener opciones de Id_puesto desde la tabla Puestos
 $queryPuestos = "SELECT Id_puesto, Nombre FROM Puestos";
 $resultPuestos = $conn->query($queryPuestos);
 
@@ -151,7 +149,6 @@ if ($resultPuestos === false) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Función para mostrar u ocultar el formulario de agregar empleado
     function toggleForm() {
         var formContainer = document.getElementById('formContainer');
         formContainer.style.display = (formContainer.style.display === 'none') ? 'block' : 'none';
@@ -162,7 +159,6 @@ if ($resultPuestos === false) {
 
 <?php
 function eliminarEmpleado($conn, $idEmpleado) {
-    // Llama al stored procedure para eliminar al empleado
     $stmt = $conn->prepare("CALL EliminarEmpleado(?)");
     $stmt->bind_param("i", $idEmpleado);
     
@@ -176,16 +172,16 @@ function eliminarEmpleado($conn, $idEmpleado) {
 }
 
 function insertarEmpleado($conn, $nombre, $paterno, $materno, $edad, $idPuesto) {
-    // Llama al stored procedure para insertar un nuevo empleado
     $stmt = $conn->prepare("CALL InsertarEmpleado(?, ?, ?, ?, ?)");
     $stmt->bind_param("sssis", $nombre, $paterno, $materno, $edad, $idPuesto);
-    
+
     if ($stmt->execute()) {
         echo "Empleado insertado correctamente.";
     } else {
-        echo "Error al intentar insertar un nuevo empleado.";
+        echo "Error al intentar insertar un nuevo empleado. Error: " . $conn->error;
     }
 
     $stmt->close();
 }
+
 ?>
